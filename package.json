@@ -1,0 +1,20 @@
+{
+  "name": "wechat-notion-exporter",
+  "version": "1.0.0",
+  "description": "WeChat article exporter to Notion and HTML",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "puppeteer": "^22.0.0",
+    "@notionhq/client": "^2.2.15"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "@types/node": "^20.0.0"
+  }
+}
