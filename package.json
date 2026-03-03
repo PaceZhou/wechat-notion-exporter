@@ -1,20 +1,19 @@
 {
   "name": "wechat-notion-exporter",
   "version": "1.0.0",
-  "description": "WeChat article exporter to Notion and HTML",
+  "description": "微信公众号文章搬运工具，支持Notion和HTML导出",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node src/index.ts"
   },
   "dependencies": {
-    "puppeteer": "^22.0.0",
-    "@notionhq/client": "^2.2.15"
+    "@notionhq/client": "^2.2.15",
+    "playwright": "^1.41.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0",
-    "@types/node": "^20.0.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "dotenv": "^16.4.5"
   }
 }
