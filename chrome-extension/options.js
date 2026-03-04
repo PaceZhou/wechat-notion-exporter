@@ -65,3 +65,23 @@ function showStatus(message, type) {
   setTimeout(() => status.textContent = '', 3000);
 }
 
+
+// 检查扩展更新
+document.getElementById('checkExtUpdate').addEventListener('click', async () => {
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/PaceZhou/wechat-notion-exporter/main/chrome-extension/manifest.json');
+    const remoteManifest = await response.json();
+    const localVersion = chrome.runtime.getManifest().version;
+    
+    if (localVersion !== remoteManifest.version) {
+      document.getElementById('extUpdateInfo').innerHTML = `
+        <div style="color: green;">✨ 发现新版本: ${remoteManifest.version}</div>
+        <div>请访问 GitHub 下载最新版本</div>
+      `;
+    } else {
+      document.getElementById('extUpdateInfo').innerHTML = '<div style="color: #666;">✅ 已是最新版本</div>';
+    }
+  } catch (error) {
+    document.getElementById('extUpdateInfo').innerHTML = '<div style="color: red;">❌ 检查失败</div>';
+  }
+});
