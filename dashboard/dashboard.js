@@ -110,12 +110,12 @@ async function updateStatus() {
 function addLog(message, type = 'info') {
   const log = document.getElementById('logPanel');
   const time = new Date().toLocaleTimeString();
-  let color = '#00ff00'; // 默认绿色
+  let color = '#007aff'; // 默认蓝色
   
-  if (type === 'error') color = '#ff4444';
-  else if (type === 'warning') color = '#ffaa00';
-  else if (type === 'success') color = '#00ff00';
-  else if (type === 'info') color = '#00aaff';
+  if (type === 'error') color = '#ff3b30';
+  else if (type === 'warning') color = '#ff9500';
+  else if (type === 'success') color = '#34c759';
+  else if (type === 'info') color = '#007aff';
   
   log.innerHTML += `<span style="color: ${color}">[${time}] ${message}</span>\n`;
   log.scrollTop = log.scrollHeight;
