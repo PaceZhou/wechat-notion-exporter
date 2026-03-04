@@ -6,3 +6,10 @@ dist/
 output/
 logs/
 *.bak
+import-dph-article.js
+test-notion.js
+find-database.js
+test-notion-connection.js
+find-db-prompts.js
+get-page-content.js
+db-prompts-id.txt

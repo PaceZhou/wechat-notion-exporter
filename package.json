@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "test": "ts-node test-v2.ts"
+    "test": "ts-node test-v2.ts",
+    "batch": "ts-node batch-import.ts",
+    "batch-file": "ts-node batch-from-file.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
