@@ -6,12 +6,28 @@
     body { width: 300px; padding: 15px; font-family: Arial; }
     button { width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; }
     #status { margin-top: 10px; color: green; }
+    .section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+    .theme-btn { width: 32%; display: inline-block; }
   </style>
 </head>
 <body>
   <h3>微信文章 URL 收集器</h3>
   <button id="save">保存当前页面 URL</button>
   <div id="status"></div>
+  
+  <div class="section">
+    <h4>阅读模式</h4>
+    <button class="theme-btn" onclick="changeTheme('light')">明亮</button>
+    <button class="theme-btn" onclick="changeTheme('dark')">深色</button>
+    <button class="theme-btn" onclick="changeTheme('sepia')">护眼</button>
+  </div>
+  
   <script src="popup-sync.js"></script>
+  <script>
+    async function changeTheme(theme) {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      chrome.tabs.sendMessage(tab.id, { action: 'change-theme', theme });
+    }
+  </script>
 </body>
 </html>

@@ -69,3 +69,11 @@ chrome.commands.onCommand.addListener(async (command) => {
     }
   }
 });
+
+// 处理阅读模式快捷键
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === 'toggle-reading-mode') {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.tabs.sendMessage(tab.id, { action: 'toggle-reading-mode' }).catch(() => {});
+  }
+});
