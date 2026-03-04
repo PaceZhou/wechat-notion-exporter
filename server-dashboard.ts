@@ -166,7 +166,6 @@ app.post('/api/config-collection-db', async (req, res) => {
     await notion.databases.update({
       database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
       properties: {
-        标题: { title: {} },
         URL: { url: {} },
         状态: { 
           select: { 
