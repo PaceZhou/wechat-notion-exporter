@@ -37,6 +37,72 @@ async function saveConfig(newConfig) {
   await fs.writeFile('.env', content);
 }
 
+// API 路由
+app.get('/api/config', (req, res) => {
+  res.json(config);
+});
+
+app.post('/api/config', async (req, res) => {
+  await saveConfig(req.body);
+  res.json({ success: true });
+});
+
+app.get('/api/status', async (req, res) => {
+  try {
+    const { Client } = require('@notionhq/client');
+    const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    const pending = await notion.databases.query({
+      database_id: config.COLLECTION_DATABASE_ID,
+      filter: { property: '状态', select: { equals: '待处理' } }
+    });
+    
+    const processed = await notion.databases.query({
+      database_id: config.COLLECTION_DATABASE_ID,
+      filter: { property: '状态', select: { equals: '已完成' } }
+    });
+    
+    res.json({
+      running: serverProcess !== null,
+      pending: pending.results.length,
+      processed: processed.results.length
+    });
+  } catch (error) {
+    res.json({ running: false, pending: 0, processed: 0 });
+  }
+});
+
+app.post('/api/server/start', (req, res) => {
+  serverProcess = true;
+  res.json({ success: true, message: '服务器已启动' });
+});
+
+app.post('/api/server/stop', (req, res) => {
+  serverProcess = null;
+  res.json({ success: true, message: '服务器已停止' });
+});
+
+app.post('/api/process/daily', async (req, res) => {
+  try {
+    execAsync('npm run daily').catch(console.error);
+    res.json({ success: true, message: '处理任务已启动' });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+app.get('/ping', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+loadConfig().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 管理面板: http://localhost:${PORT}`);
+  });
+});
+
+
+
 // API 端点
 app.get('/api/config', (req, res) => {
   res.json(config);

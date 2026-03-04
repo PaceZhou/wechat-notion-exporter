@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微信文章收集系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+      animation: fadeIn 0.6s ease;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.6s ease;
+    }
+    
+    .card h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .status-item {
+      text-align: center;
+      padding: 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+    
+    .status-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .status-value {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .status-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: border 0.3s ease;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .log {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 13px;
+      height: 300px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📎 微信文章收集系统</h1>
+      <p>跨设备自动化处理控制面板</p>
+    </div>
+    
+    <div class="card">
+      <h2>系统状态</h2>
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-value" id="serverStatus">●</div>
+          <div class="status-label">服务器状态</div>
+        </div>
+        <div class="status-item">
+          <div class="status-value" id="pendingCount">0</div>
+          <div class="status-label">待处理</div>
+        </div>
+        <div class="status-item">
+          <div class="status-value" id="processedCount">0</div>
+          <div class="status-label">已完成</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>快速操作</h2>
+      <div class="btn-group">
+        <button class="btn-primary" onclick="startServer()">🚀 启动服务器</button>
+        <button class="btn-danger" onclick="stopServer()">⏹ 停止服务器</button>
+        <button class="btn-secondary" onclick="runDaily()">▶️ 立即处理</button>
+        <button class="btn-secondary" onclick="toggleConfig()">⚙️ 配置</button>
+      </div>
+    </div>
+    
+    <div class="card" id="configPanel" style="display:none;">
+      <h2>系统配置</h2>
+      <label>Notion API Key:</label>
+      <input type="password" id="notionApiKey" placeholder="ntn_...">
+      
+      <label>收集箱数据库 ID:</label>
+      <input type="text" id="collectionDbId" placeholder="数据库 ID">
+      
+      <label>目标数据库 ID:</label>
+      <input type="text" id="targetDbId" placeholder="数据库 ID">
+      
+      <label>服务器端口:</label>
+      <input type="number" id="serverPort" value="3000">
+      
+      <button class="btn-primary" onclick="saveConfig()">💾 保存配置</button>
+    </div>
+    
+    <div class="card">
+      <h2>实时日志</h2>
+      <div class="log" id="logPanel">系统就绪，等待操作...</div>
+    </div>
+  </div>
+  
+  <script src="dashboard.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

@@ -59,6 +59,11 @@ function openConfig() {
   if (panel.style.display === 'block') loadConfig();
 }
 
+function toggleConfig() {
+  openConfig();
+}
+
+
 // 更新状态
 async function updateStatus() {
   const response = await fetch('/api/status');
