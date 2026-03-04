@@ -9,6 +9,9 @@
     "http://192.168.*:3000/*",
     "http://127.0.0.1:3000/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -19,12 +22,12 @@
   },
   "options_page": "options.html",
   "commands": {
-    "_execute_action": {
+    "save-direct": {
       "suggested_key": {
         "default": "Ctrl+Shift+S",
         "mac": "Command+Shift+S"
       },
-      "description": "保存当前页面"
+      "description": "直接保存当前页面"
     }
   }
 }
