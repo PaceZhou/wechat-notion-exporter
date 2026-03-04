@@ -15,6 +15,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('dashboard'));
 
+// 添加 CORS 头支持 Chrome 扩展
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // 加载配置
 async function loadConfig() {
   try {

@@ -12,10 +12,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // 保存配置
   document.getElementById('save').addEventListener('click', async () => {
+    const serverUrl = document.getElementById('serverUrl').value.trim();
     const newConfig = {
       notionApiKey: document.getElementById('notionApiKey').value,
       collectionDbId: document.getElementById('collectionDbId').value,
-      serverUrl: document.getElementById('serverUrl').value,
+      serverUrl: serverUrl.replace(/\/$/, ''), // 移除末尾斜杠
       processMode: document.getElementById('processMode').value
     };
     
