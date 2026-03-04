@@ -218,3 +218,11 @@ loadConfig().then(() => {
     res.json({ success: false, error: error.message });
   }
 });
+
+loadConfig().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log('🚀 管理面板启动成功！');
+    console.log(`📡 访问地址: http://localhost:${PORT}`);
+    console.log('⚙️  首次使用请点击"配置"按钮进行设置');
+  });
+});
