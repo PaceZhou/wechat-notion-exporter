@@ -37,12 +37,10 @@ async function saveConfig(newConfig: Record<string, string>) {
   await fs.writeFile('.env', content);
 }
 
-// 格式化 Notion ID（添加连字符）
+// 格式化 Notion ID
 function formatNotionId(id: string): string {
   if (!id) return id;
-  // 移除所有连字符
   const clean = id.replace(/-/g, '');
-  // 添加标准格式连字符: 8-4-4-4-12
   if (clean.length === 32) {
     return `${clean.slice(0,8)}-${clean.slice(8,12)}-${clean.slice(12,16)}-${clean.slice(16,20)}-${clean.slice(20)}`;
   }
@@ -57,7 +55,6 @@ app.get('/api/config', (req, res) => {
 app.post('/api/config', async (req, res) => {
   try {
     const newConfig = req.body;
-    // 格式化数据库 ID
     if (newConfig.COLLECTION_DATABASE_ID) {
       newConfig.COLLECTION_DATABASE_ID = formatNotionId(newConfig.COLLECTION_DATABASE_ID);
     }
@@ -81,12 +78,12 @@ app.get('/api/status', async (req, res) => {
     const notion = new Client({ auth: config.NOTION_API_KEY });
     
     const pending = await notion.databases.query({
-      database_id: config.COLLECTION_DATABASE_ID,
+      database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
       filter: { property: '状态', select: { equals: '待处理' } }
     });
     
     const processed = await notion.databases.query({
-      database_id: config.COLLECTION_DATABASE_ID,
+      database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
       filter: { property: '状态', select: { equals: '已完成' } }
     });
     
@@ -96,7 +93,7 @@ app.get('/api/status', async (req, res) => {
       processed: processed.results.length
     });
   } catch (error: any) {
-    res.json({ running: false, pending: 0, processed: 0, error: error.message });
+    res.json({ running: false, pending: 0, processed: 0 });
   }
 });
 
@@ -131,12 +128,10 @@ app.get('/api/test-notion', async (req, res) => {
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
     
-    // 测试 API Key
     await notion.users.me();
     
     const results = { apiKey: true, collection: false, target: false };
     
-    // 测试收集箱数据库
     if (config.COLLECTION_DATABASE_ID) {
       try {
         const dbId = formatNotionId(config.COLLECTION_DATABASE_ID);
@@ -145,7 +140,6 @@ app.get('/api/test-notion', async (req, res) => {
       } catch (e) {}
     }
     
-    // 测试目标数据库
     if (config.NOTION_DATABASE_ID) {
       try {
         const dbId = formatNotionId(config.NOTION_DATABASE_ID);
@@ -160,81 +154,17 @@ app.get('/api/test-notion', async (req, res) => {
   }
 });
 
-app.post('/api/create-collection-db', async (req, res) => {
-  try {
-    if (!config.NOTION_API_KEY || !config.NOTION_DATABASE_ID) {
-      return res.json({ success: false, error: '请先配置 Notion API Key 和目标数据库 ID' });
-    }
-    
-    const { Client } = require('@notionhq/client');
-    const notion = new Client({ auth: config.NOTION_API_KEY });
-    
-    // 获取目标数据库的父页面
-    const targetDb = await notion.databases.retrieve({ database_id: config.NOTION_DATABASE_ID });
-    const parentPageId = targetDb.parent.type === 'page_id' ? targetDb.parent.page_id : null;
-    
-    if (!parentPageId) {
-      return res.json({ success: false, error: '无法获取父页面 ID' });
-    }
-    
-    // 创建收集箱数据库
-    const database = await notion.databases.create({
-      parent: { page_id: parentPageId },
-      title: [{ text: { content: '微信文章收集箱' } }],
-      properties: {
-        标题: { title: {} },
-        URL: { url: {} },
-        状态: { 
-          select: { 
-            options: [
-              { name: '待处理', color: 'yellow' },
-              { name: '处理中', color: 'blue' },
-              { name: '已完成', color: 'green' },
-              { name: '失败', color: 'red' }
-            ]
-          }
-        },
-        添加时间: { created_time: {} },
-        处理时间: { date: {} }
-      }
-    });
-    
-    // 自动保存到配置
-    await saveConfig({ COLLECTION_DATABASE_ID: database.id });
-    
-    res.json({ 
-      success: true, 
-      databaseId: database.id,
-      message: '收集箱数据库创建成功！'
-    });
-  } catch (error: any) {
-    res.json({ success: false, error: error.message });
-  }
-});
-
 app.post('/api/config-collection-db', async (req, res) => {
   try {
     if (!config.NOTION_API_KEY || !config.COLLECTION_DATABASE_ID) {
       return res.json({ success: false, error: '请先配置 Notion API Key 和收集箱数据库 ID' });
     }
-
-
-
-
-loadConfig().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log('🚀 管理面板启动成功！');
-    console.log(`📡 访问地址: http://localhost:${PORT}`);
-    console.log('⚙️  首次使用请点击"配置"按钮进行设置');
-  });
-});
     
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
     
-    // 更新数据库属性
     await notion.databases.update({
-      database_id: config.COLLECTION_DATABASE_ID,
+      database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
       properties: {
         标题: { title: {} },
         URL: { url: {} },
@@ -253,11 +183,9 @@ loadConfig().then(() => {
       }
     });
     
-    res.json({ 
-      success: true,
-      message: '数据库结构配置成功！'
-    });
+    res.json({ success: true, message: '数据库结构配置成功！' });
   } catch (error: any) {
+    console.error('配置数据库失败:', error);
     res.json({ success: false, error: error.message });
   }
 });
