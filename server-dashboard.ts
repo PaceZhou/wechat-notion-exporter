@@ -264,7 +264,9 @@ app.get('/api/version', async (req, res) => {
   const localVersion = JSON.parse(await fs.readFile('version.json', 'utf-8'));
   
   try {
-    const response = await fetch('https://raw.githubusercontent.com/PaceZhou/wechat-notion-exporter/main/version.json');
+    // 添加时间戳防止缓存
+    const timestamp = new Date().getTime();
+    const response = await fetch(`https://raw.githubusercontent.com/PaceZhou/wechat-notion-exporter/main/version.json?t=${timestamp}`);
     const remoteVersion = await response.json();
     
     res.json({

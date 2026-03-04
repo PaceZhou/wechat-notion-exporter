@@ -173,24 +173,22 @@ loadConfig();
 async function checkUpdate() {
   addLog('🔄 检查更新...', 'info');
   try {
-    const response = await fetch('/api/version');
+    // 添加时间戳防止缓存
+    const timestamp = new Date().getTime();
+    const response = await fetch(`/api/version?t=${timestamp}`);
     const result = await response.json();
     
     document.getElementById('localVersion').textContent = result.local;
     
     if (result.hasUpdate) {
-      const info = document.getElementById('updateInfo');
-      info.innerHTML = `
-        <div style="color: #4CAF50; font-weight: bold;">
-          ✨ 发现新版本: ${result.remote}
-        </div>
-        <div style="margin-top: 10px;">
-          <button class="btn-primary" onclick="updateSystem()">⬇️ 立即更新</button>
-        </div>
-      `;
+      document.getElementById('updateBadge').style.display = 'block';
       addLog('✨ 发现新版本: ' + result.remote, 'success');
+      
+      if (confirm(`发现新版本 ${result.remote}\n\n是否立即更新？\n\n更新后需要重启服务器`)) {
+        updateSystem();
+      }
     } else {
-      document.getElementById('updateInfo').innerHTML = '<div style="color: #666;">✅ 已是最新版本</div>';
+      document.getElementById('updateBadge').style.display = 'none';
       addLog('✅ 已是最新版本', 'success');
     }
   } catch (error) {
