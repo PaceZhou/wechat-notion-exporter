@@ -258,3 +258,22 @@ app.post('/api/save-url', async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 });
+
+app.get('/api/version', async (req, res) => {
+  const fs = require('fs').promises;
+  const localVersion = JSON.parse(await fs.readFile('version.json', 'utf-8'));
+  
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/PaceZhou/wechat-notion-exporter/main/version.json');
+    const remoteVersion = await response.json();
+    
+    res.json({
+      local: localVersion.version,
+      remote: remoteVersion.version,
+      hasUpdate: localVersion.version !== remoteVersion.version,
+      features: remoteVersion.features
+    });
+  } catch (error) {
+    res.json({ local: localVersion.version, remote: null, hasUpdate: false });
+  }
+});

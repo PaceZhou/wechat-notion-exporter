@@ -168,3 +168,43 @@ setInterval(updateStatus, 5000);
 updateStatus();
 loadConfig();
 
+
+// 检查更新
+async function checkUpdate() {
+  addLog('🔄 检查更新...', 'info');
+  try {
+    const response = await fetch('/api/version');
+    const result = await response.json();
+    
+    document.getElementById('localVersion').textContent = result.local;
+    
+    if (result.hasUpdate) {
+      const info = document.getElementById('updateInfo');
+      info.innerHTML = `
+        <div style="color: #4CAF50; font-weight: bold;">
+          ✨ 发现新版本: ${result.remote}
+        </div>
+        <div style="margin-top: 10px;">
+          <button class="btn-primary" onclick="updateSystem()">⬇️ 立即更新</button>
+        </div>
+      `;
+      addLog('✨ 发现新版本: ' + result.remote, 'success');
+    } else {
+      document.getElementById('updateInfo').innerHTML = '<div style="color: #666;">✅ 已是最新版本</div>';
+      addLog('✅ 已是最新版本', 'success');
+    }
+  } catch (error) {
+    addLog('❌ 检查更新失败: ' + error.message, 'error');
+  }
+}
+
+// 更新系统
+function updateSystem() {
+  addLog('📥 开始更新...', 'info');
+  addLog('请在终端执行以下命令：', 'info');
+  addLog('cd wechat-notion-exporter && git pull origin main', 'warning');
+  alert('请在终端执行：\ncd wechat-notion-exporter && git pull origin main\n\n然后重启服务器');
+}
+
+// 页面加载时检查版本
+checkUpdate();
