@@ -12,7 +12,8 @@
     "setup-db": "ts-node setup-database.ts",
     "daily": "ts-node daily-task.ts",
     "server": "ts-node server.ts",
-    "dashboard": "ts-node server-dashboard.ts"
+    "dashboard": "ts-node server-dashboard.ts",
+    "service": "./service.sh"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
