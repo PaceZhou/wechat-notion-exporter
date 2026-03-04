@@ -3,14 +3,13 @@ import cors from 'cors';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 
 const execAsync = promisify(exec);
 const app = express();
 const PORT = 3000;
 
-let serverProcess = null;
-let config = {};
+let serverProcess: boolean | null = null;
+let config: Record<string, string> = {};
 
 app.use(cors());
 app.use(express.json());
@@ -25,13 +24,14 @@ async function loadConfig() {
       const [key, value] = line.split('=');
       if (key && value) config[key.trim()] = value.trim();
     });
+    console.log('✅ 配置已加载');
   } catch (error) {
-    console.log('配置文件不存在，使用默认配置');
+    console.log('⚠️  配置文件不存在，使用默认配置');
   }
 }
 
 // 保存配置
-async function saveConfig(newConfig) {
+async function saveConfig(newConfig: Record<string, string>) {
   config = { ...config, ...newConfig };
   const content = Object.entries(config).map(([k, v]) => `${k}=${v}`).join('\n');
   await fs.writeFile('.env', content);
@@ -43,12 +43,20 @@ app.get('/api/config', (req, res) => {
 });
 
 app.post('/api/config', async (req, res) => {
-  await saveConfig(req.body);
-  res.json({ success: true });
+  try {
+    await saveConfig(req.body);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.json({ success: false, error: error.message });
+  }
 });
 
 app.get('/api/status', async (req, res) => {
   try {
+    if (!config.NOTION_API_KEY || !config.COLLECTION_DATABASE_ID) {
+      return res.json({ running: false, pending: 0, processed: 0 });
+    }
+    
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
     
@@ -67,8 +75,8 @@ app.get('/api/status', async (req, res) => {
       pending: pending.results.length,
       processed: processed.results.length
     });
-  } catch (error) {
-    res.json({ running: false, pending: 0, processed: 0 });
+  } catch (error: any) {
+    res.json({ running: false, pending: 0, processed: 0, error: error.message });
   }
 });
 
@@ -86,7 +94,7 @@ app.post('/api/process/daily', async (req, res) => {
   try {
     execAsync('npm run daily').catch(console.error);
     res.json({ success: true, message: '处理任务已启动' });
-  } catch (error) {
+  } catch (error: any) {
     res.json({ success: false, message: error.message });
   }
 });
@@ -97,57 +105,22 @@ app.get('/ping', (req, res) => {
 
 app.get('/api/test-notion', async (req, res) => {
   try {
+    if (!config.NOTION_API_KEY) {
+      return res.json({ success: false, error: '请先配置 Notion API Key' });
+    }
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
     await notion.users.me();
     res.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     res.json({ success: false, error: error.message });
   }
 });
 
 loadConfig().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 管理面板: http://localhost:${PORT}`);
+    console.log('🚀 管理面板启动成功！');
+    console.log(`📡 访问地址: http://localhost:${PORT}`);
+    console.log('⚙️  首次使用请点击"配置"按钮进行设置');
   });
 });
-
-
-
-// API 端点
-app.get('/api/config', (req, res) => {
-  res.json(config);
-});
-
-app.post('/api/config', async (req, res) => {
-  await saveConfig(req.body);
-  res.json({ success: true });
-});
-
-app.get('/api/status', async (req, res) => {
-  res.json({
-    running: serverProcess !== null,
-    pending: 0,
-    processed: 0
-  });
-});
-
-app.post('/api/server/start', (req, res) => {
-  res.json({ message: '服务器已启动' });
-});
-
-app.post('/api/server/stop', (req, res) => {
-  res.json({ message: '服务器已停止' });
-});
-
-app.post('/api/process/daily', async (req, res) => {
-  execAsync('npm run daily').catch(console.error);
-  res.json({ message: '处理任务已启动' });
-});
-
-loadConfig().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🎨 管理界面: http://localhost:${PORT}`);
-  });
-});
-
