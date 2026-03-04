@@ -108,8 +108,12 @@ async function testNotionConnection() {
     const response = await fetch('/api/test-notion');
     const result = await response.json();
     if (result.success) {
-      addLog('✅ Notion 连接成功');
-      alert('✅ Notion 连接成功！');
+      const r = result.results;
+      let msg = '✅ API Key: 有效\n';
+      msg += r.collection ? '✅ 收集箱数据库: 连接成功\n' : '⚠️  收集箱数据库: 未配置或无效\n';
+      msg += r.target ? '✅ 目标数据库: 连接成功' : '⚠️  目标数据库: 未配置或无效';
+      addLog(msg);
+      alert(msg);
     } else {
       addLog('❌ Notion 连接失败: ' + result.error);
       alert('❌ Notion 连接失败: ' + result.error);

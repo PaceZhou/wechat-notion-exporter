@@ -110,8 +110,29 @@ app.get('/api/test-notion', async (req, res) => {
     }
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    // 测试 API Key
     await notion.users.me();
-    res.json({ success: true });
+    
+    const results = { apiKey: true, collection: false, target: false };
+    
+    // 测试收集箱数据库
+    if (config.COLLECTION_DATABASE_ID) {
+      try {
+        await notion.databases.retrieve({ database_id: config.COLLECTION_DATABASE_ID });
+        results.collection = true;
+      } catch (e) {}
+    }
+    
+    // 测试目标数据库
+    if (config.NOTION_DATABASE_ID) {
+      try {
+        await notion.databases.retrieve({ database_id: config.NOTION_DATABASE_ID });
+        results.target = true;
+      } catch (e) {}
+    }
+    
+    res.json({ success: true, results });
   } catch (error: any) {
     res.json({ success: false, error: error.message });
   }
