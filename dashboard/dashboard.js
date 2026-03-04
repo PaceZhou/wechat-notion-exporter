@@ -97,6 +97,24 @@ async function testNotionConnection() {
   }
 }
 
+// 自动创建收集箱数据库
+async function autoCreateCollectionDb() {
+  addLog('🗄️ 正在自动创建收集箱数据库...');
+  try {
+    const response = await fetch('/api/create-collection-db', { method: 'POST' });
+    const result = await response.json();
+    if (result.success) {
+      document.getElementById('collectionDbId').value = result.databaseId;
+      addLog('✅ ' + result.message);
+      addLog('📋 数据库 ID: ' + result.databaseId);
+    } else {
+      addLog('❌ 创建失败: ' + result.error);
+    }
+  } catch (error) {
+    addLog('❌ 创建失败: ' + error.message);
+  }
+}
+
 // 初始化
 setInterval(updateStatus, 5000);
 updateStatus();

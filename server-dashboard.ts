@@ -117,6 +117,60 @@ app.get('/api/test-notion', async (req, res) => {
   }
 });
 
+app.post('/api/create-collection-db', async (req, res) => {
+  try {
+    if (!config.NOTION_API_KEY || !config.NOTION_DATABASE_ID) {
+      return res.json({ success: false, error: '请先配置 Notion API Key 和目标数据库 ID' });
+    }
+    
+    const { Client } = require('@notionhq/client');
+    const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    // 获取目标数据库的父页面
+    const targetDb = await notion.databases.retrieve({ database_id: config.NOTION_DATABASE_ID });
+    const parentPageId = targetDb.parent.type === 'page_id' ? targetDb.parent.page_id : null;
+    
+    if (!parentPageId) {
+      return res.json({ success: false, error: '无法获取父页面 ID' });
+    }
+    
+    // 创建收集箱数据库
+    const database = await notion.databases.create({
+      parent: { page_id: parentPageId },
+      title: [{ text: { content: '微信文章收集箱' } }],
+      properties: {
+        标题: { title: {} },
+        URL: { url: {} },
+        状态: { 
+          select: { 
+            options: [
+              { name: '待处理', color: 'yellow' },
+              { name: '处理中', color: 'blue' },
+              { name: '已完成', color: 'green' },
+              { name: '失败', color: 'red' }
+            ]
+          }
+        },
+        添加时间: { created_time: {} },
+        处理时间: { date: {} }
+      }
+    });
+    
+    // 自动保存到配置
+    await saveConfig({ COLLECTION_DATABASE_ID: database.id });
+    
+    res.json({ 
+      success: true, 
+      databaseId: database.id,
+      message: '收集箱数据库创建成功！'
+    });
+  } catch (error: any) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+
+
 loadConfig().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log('🚀 管理面板启动成功！');

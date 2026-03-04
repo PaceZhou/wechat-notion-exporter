@@ -50,9 +50,9 @@
       <input type="password" id="notionApiKey" placeholder="ntn_...">
       
       <label>收集箱数据库 ID:</label>
-      <input type="text" id="collectionDbId" placeholder="数据库 ID">
+      <input type="text" id="collectionDbId" placeholder="点击下方按钮自动创建" readonly>
       
-      <label>目标数据库 ID:</label>
+      <label>目标数据库 ID（存放文章）:</label>
       <input type="text" id="targetDbId" placeholder="数据库 ID">
       
       <h3>🖥️ 服务器配置</h3>
@@ -62,6 +62,7 @@
       <label>本机 IP:</label>
       <input type="text" id="serverAddress" readonly>
       
+      <button class="btn-secondary" onclick="autoCreateCollectionDb()">🗄️ 自动创建收集箱</button>
       <button class="btn-secondary" onclick="testNotionConnection()">🔗 测试连接</button>
       <button class="btn-primary" onclick="saveConfig()">💾 保存配置</button>
     </div>
