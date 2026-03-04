@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "微信文章 URL 收集器",
+  "version": "1.0",
+  "description": "一键保存微信文章链接到本地文件",
+  "permissions": ["activeTab", "downloads"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      }
+    }
+  }
+}
