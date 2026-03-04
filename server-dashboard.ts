@@ -81,8 +81,15 @@ app.post('/api/config', async (req, res) => {
 
 app.get('/api/status', async (req, res) => {
   try {
+    const status = {
+      running: true,
+      state: 'idle', // idle, working, error
+      pending: 0,
+      processed: 0
+    };
+    
     if (!config.NOTION_API_KEY || !config.COLLECTION_DATABASE_ID) {
-      return res.json({ running: false, pending: 0, processed: 0 });
+      return res.json({ running: false, state: 'error', pending: 0, processed: 0 });
     }
     
     const { Client } = require('@notionhq/client');
@@ -93,18 +100,23 @@ app.get('/api/status', async (req, res) => {
       filter: { property: '状态', select: { equals: '待处理' } }
     });
     
+    const processing = await notion.databases.query({
+      database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
+      filter: { property: '状态', select: { equals: '处理中' } }
+    });
+    
     const processed = await notion.databases.query({
       database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
       filter: { property: '状态', select: { equals: '已完成' } }
     });
     
-    res.json({
-      running: serverProcess !== null,
-      pending: pending.results.length,
-      processed: processed.results.length
-    });
+    status.pending = pending.results.length;
+    status.processed = processed.results.length;
+    status.state = processing.results.length > 0 ? 'working' : 'idle';
+    
+    res.json(status);
   } catch (error: any) {
-    res.json({ running: false, pending: 0, processed: 0 });
+    res.json({ running: false, state: 'error', pending: 0, processed: 0 });
   }
 });
 
@@ -217,6 +229,19 @@ app.post('/api/save-url', async (req, res) => {
     const { title, url } = req.body;
     const { Client } = require('@notionhq/client');
     const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    // 查重：检查收集箱是否已存在
+    const existing = await notion.databases.query({
+      database_id: formatNotionId(config.COLLECTION_DATABASE_ID),
+      filter: {
+        property: 'URL',
+        url: { equals: url }
+      }
+    });
+    
+    if (existing.results.length > 0) {
+      return res.json({ success: false, error: '该 URL 已存在，无需重复保存' });
+    }
     
     await notion.pages.create({
       parent: { database_id: formatNotionId(config.COLLECTION_DATABASE_ID) },

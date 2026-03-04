@@ -15,6 +15,9 @@
     
     <div class="card">
       <h2>系统状态</h2>
+      <small style="color: #666; display: block; margin-bottom: 15px;">
+        🟢 绿色=运行中 | 🔵 蓝色=处理中 | 🔴 红色=异常
+      </small>
       <div class="status-grid">
         <div class="status-item">
           <div class="status-value" id="serverStatus">●</div>
@@ -48,13 +51,20 @@
       <h3>📝 Notion 配置</h3>
       <label>Notion API Key:</label>
       <input type="password" id="notionApiKey" placeholder="ntn_...">
+      <small style="color: #666;">
+        获取方式：访问 <a href="https://www.notion.so/my-integrations" target="_blank">https://www.notion.so/my-integrations</a> 
+        → 创建 Integration → 复制 API Key
+      </small>
       
       <label>收集箱数据库 ID:</label>
       <input type="text" id="collectionDbId" placeholder="从 Notion 复制数据库 ID">
-      <small>在 Notion 创建空数据库后，点击下方按钮自动配置结构</small>
+      <small style="color: #666;">
+        获取方式：在 Notion 中打开数据库（全屏视图）→ 复制浏览器地址栏中的 32 位字符
+      </small>
       
       <label>目标数据库 ID（存放文章）:</label>
       <input type="text" id="targetDbId" placeholder="从 Notion 复制数据库 ID">
+      <small style="color: #666;">同上方式获取</small>
       
       <h3>🖥️ 服务器配置</h3>
       <label>服务器端口:</label>

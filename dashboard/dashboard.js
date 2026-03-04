@@ -36,14 +36,14 @@ async function saveConfig() {
     
     const result = await response.json();
     if (result.success) {
-      addLog('✅ 配置已保存');
+      addLog('✅ 配置已保存', 'success');
       alert('✅ 配置保存成功！');
     } else {
-      addLog('❌ 保存失败: ' + result.error);
+      addLog('❌ 保存失败: ' + result.error, 'error');
       alert('❌ 保存失败: ' + result.error);
     }
   } catch (error) {
-    addLog('❌ 保存失败: ' + error.message);
+    addLog('❌ 保存失败: ' + error.message, 'error');
     alert('❌ 保存失败: ' + error.message);
   }
 }
@@ -52,7 +52,7 @@ async function saveConfig() {
 async function startServer() {
   const response = await fetch('/api/server/start', { method: 'POST' });
   const result = await response.json();
-  addLog('🚀 ' + result.message);
+  addLog('🚀 ' + result.message, 'info');
   updateStatus();
 }
 
@@ -60,16 +60,16 @@ async function startServer() {
 async function stopServer() {
   const response = await fetch('/api/server/stop', { method: 'POST' });
   const result = await response.json();
-  addLog('⏹ ' + result.message);
+  addLog('⏹ ' + result.message, 'warning');
   updateStatus();
 }
 
 // 立即处理
 async function runDaily() {
-  addLog('▶️ 开始处理任务...');
+  addLog('▶️ 开始处理任务...', 'info');
   const response = await fetch('/api/process/daily', { method: 'POST' });
   const result = await response.json();
-  addLog('✅ ' + result.message);
+  addLog('✅ ' + result.message, 'success');
 }
 
 // 切换配置面板
@@ -89,20 +89,35 @@ async function updateStatus() {
   const response = await fetch('/api/status');
   const status = await response.json();
   
-  // 更新服务器状态（绿色/红色）
+  // 更新服务器状态（绿色=运行中，蓝色=工作中，红色=异常）
   const statusEl = document.getElementById('serverStatus');
-  statusEl.textContent = status.running ? '🟢' : '🔴';
-  statusEl.style.color = status.running ? '#4CAF50' : '#f44336';
+  if (!status.running || status.state === 'error') {
+    statusEl.textContent = '🔴';
+    statusEl.style.color = '#f44336';
+  } else if (status.state === 'working') {
+    statusEl.textContent = '🔵';
+    statusEl.style.color = '#2196F3';
+  } else {
+    statusEl.textContent = '🟢';
+    statusEl.style.color = '#4CAF50';
+  }
   
   document.getElementById('pendingCount').textContent = status.pending || 0;
   document.getElementById('processedCount').textContent = status.processed || 0;
 }
 
 // 添加日志
-function addLog(message) {
+function addLog(message, type = 'info') {
   const log = document.getElementById('logPanel');
   const time = new Date().toLocaleTimeString();
-  log.innerHTML += `[${time}] ${message}\n`;
+  let color = '#00ff00'; // 默认绿色
+  
+  if (type === 'error') color = '#ff4444';
+  else if (type === 'warning') color = '#ffaa00';
+  else if (type === 'success') color = '#00ff00';
+  else if (type === 'info') color = '#00aaff';
+  
+  log.innerHTML += `<span style="color: ${color}">[${time}] ${message}</span>\n`;
   log.scrollTop = log.scrollHeight;
 }
 
