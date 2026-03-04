@@ -8,7 +8,9 @@
     "start": "ts-node src/index.ts",
     "test": "ts-node test-v2.ts",
     "batch": "ts-node batch-import.ts",
-    "batch-file": "ts-node batch-from-file.ts"
+    "batch-file": "ts-node batch-from-file.ts",
+    "setup-db": "ts-node setup-database.ts",
+    "daily": "ts-node daily-task.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
