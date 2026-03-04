@@ -1,9 +1,15 @@
 // 配置管理
 document.addEventListener('DOMContentLoaded', async () => {
-  // 加载已保存的配置
-  const config = await chrome.storage.sync.get([
+  // 优先从 local 加载，fallback 到 sync
+  let config = await chrome.storage.local.get([
     'notionApiKey', 'collectionDbId', 'serverUrl', 'processMode'
   ]);
+  
+  if (!config.serverUrl) {
+    config = await chrome.storage.sync.get([
+      'notionApiKey', 'collectionDbId', 'serverUrl', 'processMode'
+    ]);
+  }
   
   document.getElementById('notionApiKey').value = config.notionApiKey || '';
   document.getElementById('collectionDbId').value = config.collectionDbId || '';
@@ -20,7 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       processMode: document.getElementById('processMode').value
     };
     
+    // 同时保存到 sync 和 local
     await chrome.storage.sync.set(newConfig);
+    await chrome.storage.local.set(newConfig);
     showStatus('✅ 配置已保存并同步', 'success');
   });
   

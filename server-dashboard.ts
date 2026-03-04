@@ -207,3 +207,29 @@ loadConfig().then(() => {
     console.log('⚙️  首次使用请点击"配置"按钮进行设置');
   });
 });
+
+app.post('/api/save-url', async (req, res) => {
+  try {
+    if (!config.NOTION_API_KEY || !config.COLLECTION_DATABASE_ID) {
+      return res.json({ success: false, error: '服务器配置不完整' });
+    }
+    
+    const { title, url } = req.body;
+    const { Client } = require('@notionhq/client');
+    const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    await notion.pages.create({
+      parent: { database_id: formatNotionId(config.COLLECTION_DATABASE_ID) },
+      properties: {
+        Name: { title: [{ text: { content: title } }] },
+        URL: { url: url },
+        状态: { select: { name: '待处理' } }
+      }
+    });
+    
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('保存URL失败:', error);
+    res.json({ success: false, error: error.message });
+  }
+});
