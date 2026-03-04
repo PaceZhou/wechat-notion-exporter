@@ -10,10 +10,15 @@
     "batch": "ts-node batch-import.ts",
     "batch-file": "ts-node batch-from-file.ts",
     "setup-db": "ts-node setup-database.ts",
-    "daily": "ts-node daily-task.ts"
+    "daily": "ts-node daily-task.ts",
+    "server": "ts-node server.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "cors": "^2.8.6",
+    "express": "^4.22.1",
     "node-fetch": "^3.3.2",
     "playwright": "^1.41.0"
   },

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>配置管理</title>
+  <style>
+    body { width: 400px; padding: 20px; font-family: Arial; }
+    .section { margin: 15px 0; padding: 10px; border: 1px solid #ddd; }
+    label { display: block; margin: 5px 0; }
+    input, select { width: 100%; padding: 5px; margin: 5px 0; }
+    button { padding: 10px; margin: 5px; cursor: pointer; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>微信文章收集器 - 配置</h2>
+  
+  <div class="section">
+    <h3>Notion 配置</h3>
+    <label>API Key:</label>
+    <input type="password" id="notionApiKey" placeholder="ntn_...">
+    <label>收集箱数据库 ID:</label>
+    <input type="text" id="collectionDbId" placeholder="数据库 ID">
+  </div>
+  
+  <div class="section">
+    <h3>处理服务器配置</h3>
+    <label>服务器地址:</label>
+    <input type="text" id="serverUrl" placeholder="http://192.168.1.100:3000">
+    <label>处理模式:</label>
+    <select id="processMode">
+      <option value="immediate">立即处理</option>
+      <option value="scheduled">定时处理</option>
+      <option value="manual">手动触发</option>
+    </select>
+  </div>
+  
+  <div class="section">
+    <h3>快捷键配置</h3>
+    <label>当前快捷键: <span id="currentShortcut">Ctrl+Shift+S</span></label>
+    <button id="changeShortcut">修改快捷键</button>
+  </div>
+  
+  <button id="save">保存配置</button>
+  <button id="test">测试连接</button>
+  <div id="status"></div>
+  
+  <script src="options.js"></script>
+</body>
+</html>

@@ -58,6 +58,10 @@ async function dailyTask() {
       });
       
       console.log(`✅ 成功 - 图片: ${article.images.length} 张\n`);
+      
+      // 清理缓存和临时文件
+      await cleanupCache();
+      
     } catch (error: any) {
       await notion.pages.update({
         page_id: pageId,
@@ -70,6 +74,25 @@ async function dailyTask() {
   }
   
   console.log('🎉 每日任务完成！');
+}
+
+async function cleanupCache() {
+  const fs = require('fs').promises;
+  const path = require('path');
+  
+  try {
+    // 清理浏览器缓存目录
+    const cacheDir = path.join(__dirname, '.cache');
+    await fs.rm(cacheDir, { recursive: true, force: true });
+    
+    // 清理临时下载文件
+    const tempDir = path.join(__dirname, 'temp');
+    await fs.rm(tempDir, { recursive: true, force: true });
+    
+    console.log('🧹 缓存已清理');
+  } catch (error) {
+    console.log('⚠️  清理缓存失败:', error.message);
+  }
 }
 
 dailyTask().catch(console.error);

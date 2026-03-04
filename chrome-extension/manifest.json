@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "微信文章 URL 收集器",
-  "version": "1.0",
-  "description": "一键保存微信文章链接到本地文件",
-  "permissions": ["activeTab", "downloads"],
+  "version": "2.0",
+  "description": "跨设备同步的微信文章收集系统",
+  "permissions": ["activeTab", "downloads", "storage"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -12,12 +12,14 @@
       "128": "icon.png"
     }
   },
+  "options_page": "options.html",
   "commands": {
     "_execute_action": {
       "suggested_key": {
         "default": "Ctrl+Shift+S",
         "mac": "Command+Shift+S"
-      }
+      },
+      "description": "保存当前页面"
     }
   }
 }
