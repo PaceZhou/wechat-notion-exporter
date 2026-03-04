@@ -5,15 +5,17 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "ts-node test-v2.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
+    "node-fetch": "^3.3.2",
     "playwright": "^1.41.0"
   },
   "devDependencies": {
+    "dotenv": "^16.4.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "dotenv": "^16.4.5"
+    "typescript": "^5.3.3"
   }
 }
