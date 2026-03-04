@@ -88,7 +88,12 @@ function toggleConfig() {
 async function updateStatus() {
   const response = await fetch('/api/status');
   const status = await response.json();
-  document.getElementById('serverStatus').textContent = status.running ? '🟢' : '🔴';
+  
+  // 更新服务器状态（绿色/红色）
+  const statusEl = document.getElementById('serverStatus');
+  statusEl.textContent = status.running ? '🟢' : '🔴';
+  statusEl.style.color = status.running ? '#4CAF50' : '#f44336';
+  
   document.getElementById('pendingCount').textContent = status.pending || 0;
   document.getElementById('processedCount').textContent = status.processed || 0;
 }
