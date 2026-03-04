@@ -31,9 +31,11 @@ async function dailyTask() {
   
   // 2. 逐个处理
   for (const page of response.results) {
+    if (!('properties' in page)) continue;
+    
     const pageId = page.id;
     const url = (page.properties.URL as any).url;
-    const title = (page.properties.标题 as any).title[0]?.plain_text || '';
+    const title = (page.properties.Name as any)?.title?.[0]?.plain_text || '';
     
     console.log(`[处理] ${title}`);
     
@@ -90,7 +92,7 @@ async function cleanupCache() {
     await fs.rm(tempDir, { recursive: true, force: true });
     
     console.log('🧹 缓存已清理');
-  } catch (error) {
+  } catch (error: any) {
     console.log('⚠️  清理缓存失败:', error.message);
   }
 }
