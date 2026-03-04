@@ -1,5 +1,9 @@
 // 配置管理
 document.addEventListener('DOMContentLoaded', async () => {
+  // 自动显示当前版本
+  const manifest = chrome.runtime.getManifest();
+  document.getElementById('extensionVersion').textContent = manifest.version;
+  
   // 优先从 local 加载，fallback 到 sync
   let config = await chrome.storage.local.get([
     'notionApiKey', 'collectionDbId', 'serverUrl', 'processMode'

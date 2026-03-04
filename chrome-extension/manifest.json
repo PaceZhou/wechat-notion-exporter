@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "微信文章 URL 收集器",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "跨设备同步的微信文章收集系统",
   "permissions": ["activeTab", "downloads", "storage", "notifications"],
   "host_permissions": [
