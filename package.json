@@ -11,7 +11,8 @@
     "batch-file": "ts-node batch-from-file.ts",
     "setup-db": "ts-node setup-database.ts",
     "daily": "ts-node daily-task.ts",
-    "server": "ts-node server.ts"
+    "server": "ts-node server.ts",
+    "dashboard": "ts-node server-dashboard.ts"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
