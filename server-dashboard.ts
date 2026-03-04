@@ -37,6 +37,18 @@ async function saveConfig(newConfig: Record<string, string>) {
   await fs.writeFile('.env', content);
 }
 
+// 格式化 Notion ID（添加连字符）
+function formatNotionId(id: string): string {
+  if (!id) return id;
+  // 移除所有连字符
+  const clean = id.replace(/-/g, '');
+  // 添加标准格式连字符: 8-4-4-4-12
+  if (clean.length === 32) {
+    return `${clean.slice(0,8)}-${clean.slice(8,12)}-${clean.slice(12,16)}-${clean.slice(16,20)}-${clean.slice(20)}`;
+  }
+  return id;
+}
+
 // API 路由
 app.get('/api/config', (req, res) => {
   res.json(config);
@@ -44,7 +56,15 @@ app.get('/api/config', (req, res) => {
 
 app.post('/api/config', async (req, res) => {
   try {
-    await saveConfig(req.body);
+    const newConfig = req.body;
+    // 格式化数据库 ID
+    if (newConfig.COLLECTION_DATABASE_ID) {
+      newConfig.COLLECTION_DATABASE_ID = formatNotionId(newConfig.COLLECTION_DATABASE_ID);
+    }
+    if (newConfig.NOTION_DATABASE_ID) {
+      newConfig.NOTION_DATABASE_ID = formatNotionId(newConfig.NOTION_DATABASE_ID);
+    }
+    await saveConfig(newConfig);
     res.json({ success: true });
   } catch (error: any) {
     res.json({ success: false, error: error.message });
@@ -119,7 +139,8 @@ app.get('/api/test-notion', async (req, res) => {
     // 测试收集箱数据库
     if (config.COLLECTION_DATABASE_ID) {
       try {
-        await notion.databases.retrieve({ database_id: config.COLLECTION_DATABASE_ID });
+        const dbId = formatNotionId(config.COLLECTION_DATABASE_ID);
+        await notion.databases.retrieve({ database_id: dbId });
         results.collection = true;
       } catch (e) {}
     }
@@ -127,7 +148,8 @@ app.get('/api/test-notion', async (req, res) => {
     // 测试目标数据库
     if (config.NOTION_DATABASE_ID) {
       try {
-        await notion.databases.retrieve({ database_id: config.NOTION_DATABASE_ID });
+        const dbId = formatNotionId(config.NOTION_DATABASE_ID);
+        await notion.databases.retrieve({ database_id: dbId });
         results.target = true;
       } catch (e) {}
     }
