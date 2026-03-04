@@ -169,6 +169,13 @@ app.post('/api/create-collection-db', async (req, res) => {
   }
 });
 
+app.post('/api/config-collection-db', async (req, res) => {
+  try {
+    if (!config.NOTION_API_KEY || !config.COLLECTION_DATABASE_ID) {
+      return res.json({ success: false, error: '请先配置 Notion API Key 和收集箱数据库 ID' });
+    }
+
+
 
 
 loadConfig().then(() => {
@@ -177,4 +184,37 @@ loadConfig().then(() => {
     console.log(`📡 访问地址: http://localhost:${PORT}`);
     console.log('⚙️  首次使用请点击"配置"按钮进行设置');
   });
+});
+    
+    const { Client } = require('@notionhq/client');
+    const notion = new Client({ auth: config.NOTION_API_KEY });
+    
+    // 更新数据库属性
+    await notion.databases.update({
+      database_id: config.COLLECTION_DATABASE_ID,
+      properties: {
+        标题: { title: {} },
+        URL: { url: {} },
+        状态: { 
+          select: { 
+            options: [
+              { name: '待处理', color: 'yellow' },
+              { name: '处理中', color: 'blue' },
+              { name: '已完成', color: 'green' },
+              { name: '失败', color: 'red' }
+            ]
+          }
+        },
+        添加时间: { created_time: {} },
+        处理时间: { date: {} }
+      }
+    });
+    
+    res.json({ 
+      success: true,
+      message: '数据库结构配置成功！'
+    });
+  } catch (error: any) {
+    res.json({ success: false, error: error.message });
+  }
 });

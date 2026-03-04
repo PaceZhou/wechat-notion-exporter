@@ -120,24 +120,22 @@ async function testNotionConnection() {
   }
 }
 
-// 自动创建收集箱数据库
-async function autoCreateCollectionDb() {
-  addLog('🗄️ 正在自动创建收集箱数据库...');
+// 自动配置收集箱数据库结构
+async function autoConfigCollectionDb() {
+  addLog('⚙️ 正在配置数据库结构...');
   try {
-    const response = await fetch('/api/create-collection-db', { method: 'POST' });
+    const response = await fetch('/api/config-collection-db', { method: 'POST' });
     const result = await response.json();
     if (result.success) {
-      document.getElementById('collectionDbId').value = result.databaseId;
       addLog('✅ ' + result.message);
-      addLog('📋 数据库 ID: ' + result.databaseId);
-      alert('✅ 收集箱数据库创建成功！\n数据库 ID: ' + result.databaseId);
+      alert('✅ 数据库结构配置成功！');
     } else {
-      addLog('❌ 创建失败: ' + result.error);
-      alert('❌ 创建失败: ' + result.error);
+      addLog('❌ 配置失败: ' + result.error);
+      alert('❌ 配置失败: ' + result.error);
     }
   } catch (error) {
-    addLog('❌ 创建失败: ' + error.message);
-    alert('❌ 创建失败: ' + error.message);
+    addLog('❌ 配置失败: ' + error.message);
+    alert('❌ 配置失败: ' + error.message);
   }
 }
 
