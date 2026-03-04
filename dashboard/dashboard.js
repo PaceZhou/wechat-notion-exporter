@@ -4,10 +4,11 @@ let serverProcess = null;
 async function loadConfig() {
   const response = await fetch('/api/config');
   const config = await response.json();
-  document.getElementById('notionApiKey').value = config.notionApiKey || '';
-  document.getElementById('collectionDbId').value = config.collectionDbId || '';
-  document.getElementById('targetDbId').value = config.targetDbId || '';
-  document.getElementById('serverPort').value = config.serverPort || 3000;
+  document.getElementById('notionApiKey').value = config.NOTION_API_KEY || '';
+  document.getElementById('collectionDbId').value = config.COLLECTION_DATABASE_ID || '';
+  document.getElementById('targetDbId').value = config.NOTION_DATABASE_ID || '';
+  document.getElementById('serverPort').value = config.SERVER_PORT || 3000;
+  document.getElementById('serverAddress').value = config.SERVER_ADDRESS || '';
 }
 
 // 保存配置
@@ -16,16 +17,35 @@ async function saveConfig() {
     notionApiKey: document.getElementById('notionApiKey').value,
     collectionDbId: document.getElementById('collectionDbId').value,
     targetDbId: document.getElementById('targetDbId').value,
-    serverPort: document.getElementById('serverPort').value
+    serverPort: document.getElementById('serverPort').value,
+    serverAddress: document.getElementById('serverAddress').value
   };
   
-  await fetch('/api/config', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(config)
-  });
-  
-  addLog('✅ 配置已保存');
+  try {
+    const response = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        NOTION_API_KEY: config.notionApiKey,
+        COLLECTION_DATABASE_ID: config.collectionDbId,
+        NOTION_DATABASE_ID: config.targetDbId,
+        SERVER_PORT: config.serverPort,
+        SERVER_ADDRESS: config.serverAddress
+      })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      addLog('✅ 配置已保存');
+      alert('✅ 配置保存成功！');
+    } else {
+      addLog('❌ 保存失败: ' + result.error);
+      alert('❌ 保存失败: ' + result.error);
+    }
+  } catch (error) {
+    addLog('❌ 保存失败: ' + error.message);
+    alert('❌ 保存失败: ' + error.message);
+  }
 }
 
 // 启动服务器
@@ -89,11 +109,14 @@ async function testNotionConnection() {
     const result = await response.json();
     if (result.success) {
       addLog('✅ Notion 连接成功');
+      alert('✅ Notion 连接成功！');
     } else {
       addLog('❌ Notion 连接失败: ' + result.error);
+      alert('❌ Notion 连接失败: ' + result.error);
     }
   } catch (error) {
     addLog('❌ 连接失败: ' + error.message);
+    alert('❌ 连接失败: ' + error.message);
   }
 }
 
@@ -107,11 +130,14 @@ async function autoCreateCollectionDb() {
       document.getElementById('collectionDbId').value = result.databaseId;
       addLog('✅ ' + result.message);
       addLog('📋 数据库 ID: ' + result.databaseId);
+      alert('✅ 收集箱数据库创建成功！\n数据库 ID: ' + result.databaseId);
     } else {
       addLog('❌ 创建失败: ' + result.error);
+      alert('❌ 创建失败: ' + result.error);
     }
   } catch (error) {
     addLog('❌ 创建失败: ' + error.message);
+    alert('❌ 创建失败: ' + error.message);
   }
 }
 

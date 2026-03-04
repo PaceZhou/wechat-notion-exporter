@@ -49,18 +49,19 @@
       <label>Notion API Key:</label>
       <input type="password" id="notionApiKey" placeholder="ntn_...">
       
-      <label>收集箱数据库 ID:</label>
-      <input type="text" id="collectionDbId" placeholder="点击下方按钮自动创建" readonly>
-      
       <label>目标数据库 ID（存放文章）:</label>
-      <input type="text" id="targetDbId" placeholder="数据库 ID">
+      <input type="text" id="targetDbId" placeholder="从 Notion 复制数据库 ID">
+      <small>填入后点击"自动创建收集箱"，程序会自动创建收集箱数据库</small>
+      
+      <label>收集箱数据库 ID:</label>
+      <input type="text" id="collectionDbId" placeholder="自动创建后显示" readonly>
       
       <h3>🖥️ 服务器配置</h3>
       <label>服务器端口:</label>
       <input type="number" id="serverPort" value="3000">
       
-      <label>本机 IP:</label>
-      <input type="text" id="serverAddress" readonly>
+      <label>本机 IP（供 Chrome 扩展连接）:</label>
+      <input type="text" id="serverAddress" placeholder="如: 192.168.1.100">
       
       <button class="btn-secondary" onclick="autoCreateCollectionDb()">🗄️ 自动创建收集箱</button>
       <button class="btn-secondary" onclick="testNotionConnection()">🔗 测试连接</button>
