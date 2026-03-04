@@ -95,6 +95,17 @@ app.get('/ping', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.get('/api/test-notion', async (req, res) => {
+  try {
+    const { Client } = require('@notionhq/client');
+    const notion = new Client({ auth: config.NOTION_API_KEY });
+    await notion.users.me();
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
 loadConfig().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 管理面板: http://localhost:${PORT}`);

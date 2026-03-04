@@ -81,7 +81,24 @@ function addLog(message) {
   log.scrollTop = log.scrollHeight;
 }
 
+// 测试 Notion 连接
+async function testNotionConnection() {
+  addLog('🔗 测试 Notion 连接...');
+  try {
+    const response = await fetch('/api/test-notion');
+    const result = await response.json();
+    if (result.success) {
+      addLog('✅ Notion 连接成功');
+    } else {
+      addLog('❌ Notion 连接失败: ' + result.error);
+    }
+  } catch (error) {
+    addLog('❌ 连接失败: ' + error.message);
+  }
+}
+
 // 初始化
 setInterval(updateStatus, 5000);
 updateStatus();
+loadConfig();
 
